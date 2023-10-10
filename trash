@@ -1,0 +1,244 @@
+
+// // char *** groupAnagrams(char ** strs, int strsSize, int* returnSize, int** returnColumnSizes){
+// //     table_t *ht = creat_table(strsSize);
+// //     value_t arrayint;
+// //     arrayint.culomn = 1;
+// //     arrayint.nbarrays = 0;
+// //     int i = 0;
+// //         for (int i = 0; i < strsSize; i++) {
+// //         table_set(ht, strs[i], &arrayint);
+// //     }
+    
+// //     char ***newarray = (char ***)(malloc(sizeof(char **) * arrayint.nbarray));
+// //                 returnSize = arrayint.nbarrays;
+// //             returnColumnSizes = malloc(sizeof(int)) * arrayint.culomn);
+// //     for(int j = 0; j < ht->size; j++){
+// //         if (ht->array[j])
+// //         {
+// //             **newarray[j] = ht->array[j]
+
+// //         }
+// //     return newarray;
+// //     }
+
+
+// // }
+// char ***groupAnagrams(char **strs, int strsSize, int *returnSize, int **returnColumnSizes) {
+//     table_t *ht = creat_table(strsSize);
+//     value_t arrayint;
+//     arrayint.culomn = 1;
+//     arrayint.nbarrays = 0;
+
+//     for (int i = 0; i < strsSize; i++) {
+//         table_set(ht, strs[i], &arrayint);
+//     }
+
+//     char ***newarray = (char ***)malloc(sizeof(char **) * arrayint.nbarrays);
+//     *returnSize = arrayint.nbarrays;
+//     *returnColumnSizes = (int *)malloc(sizeof(int) * arrayint.nbarrays);
+
+//     int k = 0;
+//     for (int j = 0; j < ht->size; j++) {
+//         node_t *current = ht->array[j];
+//         while (current) {
+//             int colSize = arrayint.culomn;
+//             char **col = (char **)malloc(sizeof(char *) * colSize);
+            
+//             for (int i = 0; i < colSize; i++) {
+//                 col[i] = current->key;
+//                 current = current->next;
+//             }
+
+//             newarray[k] = col;
+//             (*returnColumnSizes)[k] = colSize;
+//             k++;
+//         }
+//     }
+
+//     return newarray;
+
+
+// }
+
+void set_table(table_t *ht, char *key){
+    unsigned int index = index_key(ht, key);
+    node_t *current = ht->array[index];
+    while (current){
+        if (current->key == key){
+            current->index = value;
+            return;
+        }
+        current = current->next;
+    }
+        data *new= malloc(sizeof(data));
+        if (new == NULL) {
+            return;
+        }
+   new->key = key;
+    new->index = value;
+    new->next = ht->array[index];
+    ht->array[index] = new;
+}
+
+
+/**
+ *set_table
+ *return 1 success 0 faild
+*/
+int table_set(table_t *ht, char *key, value_t arrayint){
+node_t *current, *newnode;
+
+
+int
+if (ht == NULL|| key == NULL)
+return 0;
+newnode = creat_nodes(key, value);
+unsigned long int index = index_key((const char *)key);
+if (ht->array[index] == NULL){
+   newnode = ht->array[index];
+arrayint->nbarrays = arrayint->nbarrays + 1;
+}
+else{
+newnode->next = ht->array[index];
+ht->array[index] = newnode;
+arrayint->culomn = arrayint->culomn + 1;
+}
+return 1;
+}
+#include<stdio.h>
+#include<stdlib.h>
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+
+typedef struct node_s{
+    char *key;
+    char *strs[100];
+    char *strsSize;
+}node_t;
+typedef struct table_s{
+    node_t **array;
+    int size;
+}table_t;
+/**
+ *creat table
+*/
+table_t *creat_table (int size){
+    table_t *ht = malloc (sizeof(table_t));
+    if (ht == NULL)
+    return NULL;
+
+    ht->array = malloc (sizeof(node_t *) * size);
+    if (ht->array == NULL){
+    free(ht);
+    return NULL;
+    }
+
+    ht->size = size;
+    for (int i = 0; i < size; i++)
+    ht->array[i] = NULL;
+
+    return ht;
+}
+/**
+ * hash_djb2 - implementation of the djb2 algorithm
+ * @str: string used to generate hash value
+ *
+ * Return: hash value
+ */
+unsigned long int hash_djb2(const unsigned char *str)
+{
+	unsigned long int hash;
+
+	hash = 5381;
+    int c;
+	while((c = *str++))
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+	return (hash);
+}
+/**
+ *key index 
+*/
+unsigned int index_key(const unsigned char *key, unsigned long int size){
+    unsigned int index;
+  index =  hash_djb2(key) % size;
+    return index;
+}
+/**
+ *creat node
+ *return node
+*/
+node_t *creat_nodes(const char *key)
+{
+node_t *new_node;
+new_node = malloc(sizeof(node_t));
+	if (new_node == NULL)
+	return (NULL);
+
+	new_node->key = strdup(key);
+	if (new_node->key == NULL)
+	{
+	free(new_node);
+	return (NULL);
+	}
+    new_node->strs[100]=NULL;
+    new_node->strsSize = 0;
+  return new_node;
+}  
+node_t* find_key(table_t *ht, char *key) {
+    unsigned int index = index_key(ht, key);
+   node_t* current = ht->array[index];
+    
+    if (current != NULL){
+       return current;
+    }
+
+    return NULL;
+}
+char *** groupAnagrams(char ** strs, int strsSize, int* returnSize, int** returnColumnSizes){
+    table_t *map = NULL;
+    table_t *current;
+    char **resStrs = NULL;
+    char ***result = NULL;
+    int *colsSize = NULL;
+    unsigned long int index;
+    size_t i;
+
+    map = creat_table(strSize);
+    for (i = 0; i < strsSize; i++) {
+        current = find_key(map, str[i])
+        if (current == NULL){
+            current->
+        }
+
+
+
+
+
+int main() {
+    char *strs[] = {"eat", "tea", "tan", "ate", "nat", "bat"};
+    int strsSize = sizeof(strs) / sizeof(strs[0]);
+    int returnSize;
+    int *returnColumnSizes;
+
+    char ***result = groupAnagrams(strs, strsSize, &returnSize, &returnColumnSizes);
+
+    for (int i = 0; i < returnSize; i++) {
+        printf("[");
+        for (int j = 0; j < returnColumnSizes[i]; j++) {
+            printf("\"%s\"", result[i][j]);
+            if (j < returnColumnSizes[i] - 1) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+        free(result[i]);
+    }
+
+    free(result);
+    free(returnColumnSizes);
+
+    return 0;
+}
